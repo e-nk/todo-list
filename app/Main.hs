@@ -10,7 +10,7 @@ main = do
 
 mainLoop :: [Task] -> IO ()
 mainLoop tasks = do
-    putStrLn "Options: [add, view, view-incomplete, complete, edit, delete, exit]"
+    putStrLn "Options: [add, view, view-incomplete, complete, edit, delete, exit, --help, -h]"
     option <- getLine
     case option of
         "add" -> do
@@ -45,6 +45,8 @@ mainLoop tasks = do
                     mainLoop tasks
         "edit" -> editTaskPrompt tasks
         "delete" -> deleteTaskPrompt tasks
+        "--help" -> displayHelpMenu tasks  -- Pass tasks to displayHelpMenu
+        "-h" -> displayHelpMenu tasks  -- Pass tasks to displayHelpMenu
         "exit" -> putStrLn "Goodbye!"
         _ -> do
             putStrLn "Invalid option."
@@ -81,3 +83,18 @@ deleteTaskPrompt tasks = do
         Nothing -> do
             putStrLn "Invalid task ID."
             mainLoop tasks
+
+-- Function to display the help menu
+displayHelpMenu :: [Task] -> IO ()
+displayHelpMenu tasks = do
+    putStrLn "Help Menu:"
+    putStrLn "Available commands:"
+    putStrLn "  add               - Add a new task."
+    putStrLn "  view              - View all tasks."
+    putStrLn "  view-incomplete   - View all incomplete tasks."
+    putStrLn "  complete          - Mark a task as complete."
+    putStrLn "  edit              - Edit an existing task."
+    putStrLn "  delete            - Delete a task."
+    putStrLn "  exit              - Exit the application."
+    putStrLn "  --help, -h       - Show this help menu."
+    mainLoop tasks  -- Call mainLoop with tasks

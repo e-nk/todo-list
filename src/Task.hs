@@ -10,4 +10,3 @@ data Task = Task { taskId :: Int
 newTask :: Int -> String -> String -> String -> Task
 -- newTask idDesc desc priority dueDate = Task idDesc desc False priority dueDate
 newTask idDesc desc taskPriority taskDueDate = Task idDesc desc False taskPriority taskDueDate
-
