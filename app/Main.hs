@@ -1,4 +1,4 @@
-import TaskManager (addTask, viewTasks, markComplete, deleteTask, editTask)
+import TaskManager (addTask, viewTasks, markComplete, deleteTask, editTask, filterByCompletion)
 import FileManager (saveTasks, loadTasks)
 import Task (Task(..), newTask)
 import System.IO (hFlush, stdout)
@@ -12,18 +12,26 @@ main = do
 
 mainLoop :: [Task] -> IO ()
 mainLoop tasks = do
-    putStrLn "Options: [add, view, complete, edit, delete, exit]"
+    putStrLn "Options: [add, view, view-incomplete, complete, edit, delete, exit]"
     option <- getLine
     case option of
         "add" -> do
             putStrLn "Enter task description:"
             desc <- getLine
-            let newTasks = addTask desc tasks
+            putStrLn "Enter priority (High, Medium, Low):"
+            priority <- getLine
+            putStrLn "Enter due date (YYYY-MM-DD):"
+            dueDate <- getLine
+            let newTasks = addTask desc priority dueDate tasks
             saveTasks "tasks.txt" newTasks
             putStrLn "Task added!"
             mainLoop newTasks
         "view" -> do
             putStrLn (viewTasks tasks)
+            mainLoop tasks
+        "view-incomplete" -> do
+            let incompleteTasks = filterByCompletion False tasks
+            putStrLn (viewTasks incompleteTasks)
             mainLoop tasks
         "complete" -> do
             putStrLn "Enter task ID to mark as complete:"
