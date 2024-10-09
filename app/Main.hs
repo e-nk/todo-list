@@ -1,12 +1,10 @@
 import TaskManager (addTask, viewTasks, markComplete, deleteTask, editTask, filterByCompletion)
 import FileManager (saveTasks, loadTasks)
-import Task (Task(..), newTask)
-import System.IO (hFlush, stdout)
+import Task (Task(..))
 import Text.Read (readMaybe)
 
 main :: IO ()
 main = do
-    -- Load existing tasks from a file
     tasks <- loadTasks "tasks.txt"
     mainLoop tasks
 
@@ -19,10 +17,10 @@ mainLoop tasks = do
             putStrLn "Enter task description:"
             desc <- getLine
             putStrLn "Enter priority (High, Medium, Low):"
-            priority <- getLine
+            taskPriority <- getLine
             putStrLn "Enter due date (YYYY-MM-DD):"
-            dueDate <- getLine
-            let newTasks = addTask desc priority dueDate tasks
+            taskDueDate <- getLine
+            let newTasks = addTask desc taskPriority taskDueDate tasks
             saveTasks "tasks.txt" newTasks
             putStrLn "Task added!"
             mainLoop newTasks
@@ -37,19 +35,16 @@ mainLoop tasks = do
             putStrLn "Enter task ID to mark as complete:"
             idStr <- getLine
             case readMaybe idStr of
-                Just taskId -> 
-                    let updatedTasks = markComplete tasks taskId
-                    in do
-                        saveTasks "tasks.txt" updatedTasks
-                        putStrLn "Task marked as complete!"
-                        mainLoop updatedTasks
+                Just inputTaskId -> do
+                    let updatedTasks = markComplete tasks inputTaskId
+                    saveTasks "tasks.txt" updatedTasks
+                    putStrLn "Task marked as complete!"
+                    mainLoop updatedTasks
                 Nothing -> do
                     putStrLn "Invalid task ID."
                     mainLoop tasks
-        "edit" -> do
-            editTaskPrompt tasks
-        "delete" -> do
-            deleteTaskPrompt tasks
+        "edit" -> editTaskPrompt tasks
+        "delete" -> deleteTaskPrompt tasks
         "exit" -> putStrLn "Goodbye!"
         _ -> do
             putStrLn "Invalid option."
@@ -61,10 +56,10 @@ editTaskPrompt tasks = do
     putStrLn "Enter Task ID to edit:"
     idStr <- getLine
     case readMaybe idStr of
-        Just taskId -> do
+        Just inputTaskId -> do
             putStrLn "Enter new description:"
             newDesc <- getLine
-            let updatedTasks = editTask taskId newDesc tasks
+            let updatedTasks = editTask inputTaskId newDesc tasks
             saveTasks "tasks.txt" updatedTasks
             putStrLn "Task edited!"
             mainLoop updatedTasks
@@ -78,12 +73,11 @@ deleteTaskPrompt tasks = do
     putStrLn "Enter Task ID to delete:"
     idStr <- getLine
     case readMaybe idStr of
-        Just taskId -> 
-            let updatedTasks = deleteTask taskId tasks
-            in do
-                saveTasks "tasks.txt" updatedTasks
-                putStrLn "Task deleted!"
-                mainLoop updatedTasks
+        Just inputTaskId -> do
+            let updatedTasks = deleteTask inputTaskId tasks
+            saveTasks "tasks.txt" updatedTasks
+            putStrLn "Task deleted!"
+            mainLoop updatedTasks
         Nothing -> do
             putStrLn "Invalid task ID."
             mainLoop tasks
